@@ -5,28 +5,28 @@ using UnityEngine.UI;
 
 public class RewardPerfab : MonoBehaviour
 {
-    public GameObject rewardImage;
-    public GameObject rewardImage2;
+    //颜色亮和暗两种金币
+    public Button rewardButton;
+    public Image rewardImageBlack;
+    //杯数text
     public Text rankLever;
-    private int trophySum = 6000;
-    
+
     //点击领取后将颜色亮一些的金币隐藏
-    public void closeRewardButton()
+    public void CloseRewardButton()
     {
-        rewardImage.SetActive(false);
+        rewardButton.gameObject.SetActive(false);
     }
     
     //将颜色暗一些的金币隐藏
-    public void closeRewardButtonBackGround()
+    public void CloseRewardImageBlack()
     {
-        rewardImage2.SetActive(false);
+        rewardImageBlack.gameObject.SetActive(false);
     }
     
     //领取金币的点击事件函数
-    public void addCoinSum()
+    public void AddCoinSum()
     {
-        CoinManager.Instance.addCoin();
+        CoinManager.Instance.AddCoin();
     }
-    // Start is called before the first frame update
 
 }

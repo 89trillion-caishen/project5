@@ -8,20 +8,23 @@ using UnityEngine.UI;
 public class CoinManager : MonoBehaviour
 {
     public static CoinManager Instance { get; set; }
-    private int coinsum=4000;
-    public Text coinSum;
-    // Start is called before the first frame update
+    //初始金币数
+    private int coinSum=4000;
+    //金币的UI Text
+    [SerializeField] private Text coinSumText;
+    //public int trophySum = 6000;
+    
+    //初始化金币数
     void Start()
     {
-        coinSum.text = coinsum.ToString();
+        coinSumText.text = coinSum.ToString();
     }
     
-    
     //领取奖励后更新金币数
-    public void addCoin()
+    public void AddCoin()
     {
-        coinsum += 100;
-        coinSum.text = coinsum.ToString();
+        coinSum += 100;
+        coinSumText.text = coinSum.ToString();
     }
 
     private void Awake()
