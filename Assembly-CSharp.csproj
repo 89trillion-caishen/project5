@@ -58,9 +58,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Script\CoinManager.cs" />
-     <Compile Include="Assets\Script\RewardPerfab.cs" />
-     <Compile Include="Assets\Script\RewardUIManager.cs" />
+     <Compile Include="Assets\Scripts\CoinManager.cs" />
+     <Compile Include="Assets\Scripts\RewardPerfab.cs" />
+     <Compile Include="Assets\Scripts\RewardUIManager.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>/Users/caishen/git_code/project5/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
