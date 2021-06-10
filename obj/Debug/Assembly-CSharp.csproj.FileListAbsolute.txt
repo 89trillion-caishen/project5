@@ -1,0 +1,2 @@
+/Users/caishen/git_code/project5/obj/Debug/Assembly-CSharp.csprojAssemblyReference.cache
+/Users/caishen/git_code/project5/obj/Debug/Assembly-CSharp.csproj.CoreCompileInputs.cache

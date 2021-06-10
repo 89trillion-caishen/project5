@@ -5,28 +5,27 @@ using UnityEngine.UI;
 
 public class RewardUIManager : MonoBehaviour
 {
+    //金币的UI Text
+    [SerializeField] private Text coinSumText;
     //显示奖杯数的text
     [SerializeField] private Text trophySumText;
     //生成预制件的位置
     [SerializeField] private Transform contentTransform;
     //预制件
-    [SerializeField] private GameObject rewardBackGroud;
+    [SerializeField] private RewardPerfab rewardBackGroud;
+    private RewardPerfab[] rewardPerfab=new RewardPerfab[10];
     //打开奖励的buttton
     [SerializeField] private Button openButton;
     //段位名Text
     [SerializeField] private Text rankNameText;
-    
-    //存放4000分以上预制件脚本对象
-    private RewardPerfab[] rewardPerfab=new RewardPerfab[10];
-    //现在杯数
-    private int trophySum=6000;
+
+    [SerializeField] private Image backGround;
     //杯数上限值
     private int trophySumMax = 6000;
     //4000分以上才有奖励
     private int trophySumMin = 4000;
     //num用于计数，计算总共生产多少个奖励
     private int num;
-    private GameObject newGameObject;
     
     /// <summary>
     /// 打开点击事件
@@ -35,6 +34,8 @@ public class RewardUIManager : MonoBehaviour
     /// </summary>
     public void OpenClick()
     {
+        ShowCoinDiamond();
+        RefreshRankLever();
         openButton.gameObject.SetActive(false);
         transform.gameObject.SetActive(true);
         CreatePrefab();
@@ -47,113 +48,78 @@ public class RewardUIManager : MonoBehaviour
     /// </summary>
     public void IncreaseTrophyClick()
     {
-        if (trophySum >= trophySumMax)
+        if (CoinManager.Instance.GetTrophy() >= trophySumMax)
         {
             return;
         }
-        trophySum += 100;
-        trophySumText.text = trophySum.ToString();
+        CoinManager.Instance.ChangetrophySum(100);
+        trophySumText.text = CoinManager.Instance.GetTrophy().ToString();
         RefreshRankLever();
-        AddTrophyRefreshReward();
+        for (int i = 0; i < num; i++)
+        {
+            rewardPerfab[i].InitPerfab((i + 1) * 200 + trophySumMin);
+        }
     }
-
+    
+    /// <summary>
+    /// 刷新段位
+    /// </summary>
     public void RefreshRankLever()
     {
-        if (trophySum >= trophySumMin)
+        if (CoinManager.Instance.GetTrophy() >= trophySumMin)
         {
-            rankNameText.text = "段位一";
-        }
-        if (trophySum >= (trophySumMin+1000))
-        {
-            rankNameText.text = "段位二";
+            rankNameText.text= "段位"+((CoinManager.Instance.GetTrophy() - trophySumMin)/1000+1);
         }
     }
     /// <summary>
     /// 生产奖励预制件
-    /// num用于计数，计算总共生产多少个奖励
-    /// j用于计数，当i*200到达整千数时隐藏奖励
+    /// 调用Init()方法，传递参数
     /// </summary>
     //生产奖励预制件
     public void CreatePrefab()
     {
-        num = (trophySumMax - trophySumMin) / 200;
-        for (int i = 0,j = 1; i < num; i++,j++)
+        for (int i = 0; i < num; i++)
         {
-            newGameObject = Instantiate(rewardBackGroud, contentTransform);
-            RewardPerfab rewardPerfabObject = newGameObject.GetComponent<RewardPerfab>();
-            rewardPerfabObject.rankLever.text = ((i + 1) * 200 + trophySumMin).ToString();
-            rewardPerfab[i] = rewardPerfabObject;
-            if (j == 5)
-            {
-                rewardPerfabObject.CloseRewardButton();
-                rewardPerfabObject.CloseRewardImageBlack();
-                j = 0;
-            }
-            if (i * 200 > trophySum)
-            {
-                rewardPerfabObject.CloseRewardButton();
-            }
+            rewardPerfab[i] = Instantiate(rewardBackGroud, contentTransform);
+            rewardPerfab[i].InitPerfab((i + 1) * 200 + trophySumMin);
         }
     }
     /// <summary>
     ///赛季更新
     /// 刷新4000分以上奖励
     /// 4000以上分数减半
+    /// 调用预置体的初始化方法刷新奖励
     /// </summary>
     public void RefreshReward()
     {
-        if (trophySum > trophySumMin)
+        if (CoinManager.Instance.GetTrophy() > trophySumMin)
         {
-            trophySum = trophySumMin + (trophySum - trophySumMin) / 2;
+            CoinManager.Instance.RefreshTrophySum();
         }
-        trophySumText.text = trophySum.ToString();
+        trophySumText.text = CoinManager.Instance.GetTrophy().ToString();
         for (int i = 0; i < num; i++)
         {
-            int conventTrophySum = 200 * (i + 1) + trophySumMin;
-            //如果为整千数不刷新奖励
-            if (conventTrophySum == 5000 || conventTrophySum == 6000)
-            {
-                continue;
-            }
-            if (trophySum >= conventTrophySum)
-            {
-                rewardPerfab[i].rewardButton.gameObject.SetActive(true);
-            }
-            else
-            {
-                rewardPerfab[i].rewardButton.gameObject.SetActive(false);
-            }
+            rewardPerfab[i].InitPerfab((i + 1) * 200 + trophySumMin);
         }
-
         RefreshRankLever();
     }
     /// <summary>
-    /// 增加杯数刷新奖励
+    /// 更新展示金币和杯数
     /// </summary>
-    public void AddTrophyRefreshReward()
+    public void ShowCoinDiamond()
     {
-        for (int i = 0; i < num; i++)
-        {
-            int conventTrophySum = 200 * (i + 1) + trophySumMin;
-            //如果为整千数不刷新奖励
-            if (conventTrophySum == 5000 || conventTrophySum == 6000)
-            {
-                continue;
-            }
-            if (trophySum >= conventTrophySum)
-            {
-                rewardPerfab[i].rewardButton.gameObject.SetActive(true);
-            }
-        }
+        coinSumText.text = CoinManager.Instance.GetCoin().ToString();
+        trophySumText.text = CoinManager.Instance.GetTrophy().ToString();
     }
     /// <summary>
+    /// 计算需要的预制件个数
     /// 初始化杯数
+    /// 初始化段位信息
     /// 初始化激活状态
     /// </summary>
     void Start()
     {
-        RefreshRankLever();
-        trophySumText.text = trophySum.ToString();
+        num = (trophySumMax - trophySumMin) / 200;
         openButton.gameObject.SetActive(true);
         transform.gameObject.SetActive(false);
     }
